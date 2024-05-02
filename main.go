@@ -4,88 +4,75 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/JulioGastonPita/wordflavor/funcs"
+	funcs "github.com/juliogastonpita/WordFlavor/functions"
+
+	"github.com/agnivade/levenshtein"
+
+	texttheater "github.com/texttheater/golang-levenshtein/levenshtein"
 )
 
 func main() {
-	s1 := "Oesía"
+	s1 := "Pedro Sánchez"
 
 	// List of strings to compare with
-	toRelated := []string{"Grupo Oesía",
-		"Poesía",
-		"Teatro y Poesía",
-		"Poesía sentimental",
-		"Poesía ingenua",
-		"sobre poesia ingenua y poesia sentimental",
-		"poesia afroantillana y negrista",
-		"Oesia",
-		"Cipherbit-Grupo Oesia",
-		"Torre Oesia",
-		"Tecnobit-Grupo Oesia",
-		"Inster-Grupo Oesia",
-		"oesia networks",
-		"UAV Navigation-Grupo Oesia",
-		"Director financiero de Grupo Oesía",
-		"Presidencia de Grupo Oesía",
-		"Instel-Grupo Oesia",
-		"Poesía y elocuencia de las tribus de América y otros textos",
-		"Oesia Group",
-		"Libro de poesía",
-		"Inster-Oesia Group",
-		"poesia moderna",
-		"Oesia Networks, Tecnobit-Grupo Oesia, Cipherbit-Grupo Oesia, UAV Navigation-Grupo Oesia, Inster-Grupo Oesia",
-		"Oesia Networks Colombia S.A.S",
-		"poesía clasista",
-		"Libro 'Estudio e índices de poesía y poética (1988-1999)'",
-		"poesia espanola",
-		"Tecnobit-Oesia Group",
-		"estudio e indices de poesia y poetica (1988-1999) de isaac canton",
-		"poesia del marketing: the party",
-		"Tecnobit - Grupo Oesia",
-		"inster-grupo oesia, airbus helicopters espana, tecnobit-grupo oesia, anzen engineering",
-		"Premio Reina Sofía de Poesía Iberoamericana",
-		"poesia social",
-		"Proyectos de Defensa de Grupo Oesia",
-		"poesia vanguardista",
-		"Libro de poesía de Jose Hierro",
-		"poesia bucolica",
-		"poesia de senectud",
-		"Oesia Networks S.L.",
-		"poesia y elocuencia de las tribus de america",
-		"Oesia Networks SL",
-		"poesia epica",
-		"leccion de poesia",
-		"escribir poesía",
-		"reflexiones criticas sobre la poesia y sobre la pintura de jean-baptiste du bos",
-		"Financial Director of Grupo Oesia",
-		"eloquencia y poesía",
-		"Grupa Oesia",
-		"xxv premio reina sofia de poesia iberoamericana",
-		"Relevancia de Cipherbit-Grupo Oesia",
-		"poesia dramatica",
-		"la poesia de jose kozer: de la recta a las cajas chinas",
-		"poesia lirica",
-		"programa de RSC 'Oesia Sostenible'",
-		"Luis Furnells (Presidente ejecutivo de Grupo Oesia)",
-		"centro tecnológico de Valdepeñas de Tecnobit-Grupo Oesia",
-		"uav navigation-grupo oesia’s attitude and heading reference system (ahrs)",
-		"UAV Navigation-Oesia Group",
-		"Poesía del Medioevo",
-		"poesía y poetas",
-		"Oesia Networks Sociedad Limitada",
-		"1147 specimens of oesia",
-		"Luis Furnells (Presidente Ejecutivo de Oesia Group)",
-		"ccoo - oesia",
-		"Executive President of Grupo Oesia",
-		"Emilio Varela (Tecnobit-Grupo Oesia)",
-		"Sener Aeroespacial, GMV, Tecnobit-Grupo Oesia",
+	toRelated := []string{"Pedro Sanchez",
+		"Gobierno de Pedro Sánchez",
+		"Esposa de Pedro Sánchez",
+		"pantuflas para los pies de pedro sanchez",
+		"Presidente Pedro Sánchez",
+		"Spanish Prime Minister Pedro Sanchez",
+		"Criticas contra Pedro Sanchez",
+		"Pedro Sánchez Pérez-Castejón",
+		"Pedro Sánchez, Kajsa Ollongren y mandatarios de Europa",
+		"Partido de Pedro Sánchez",
+		"estrategia de Pedro Sánchez",
+		"allies of bruised spanish pm pedro sanchez",
+		"Pedro Sánchez Fernández",
+		"Педро Санчес Перес-Кастехон (Pedro Sanchez Perez-Castejon)",
+		"桑切斯 (Pedro Sánchez)",
+		"Wife of Pedro Sanchez",
+		"Spain's Prime Minister Pedro Sanchez",
+		"otros pedro sanchez en España",
+		"Педро Санчес (Pedro Sánchez)",
+		"Partido Político de Pedro Sánchez",
+		"Pedro Sanchez's wife, Begona Gomez",
+		"Pedro Sanchez, Begona Gomez",
+		"Pedro Sanchez and his wife",
+		"西班牙首相佩德罗·桑切斯 (Pedro Sanchez)",
+		"桑杰士 (Pedro Sánchez)",
+		"总理桑杰士 (Pedro Sanchez)",
+		"Mujer de Pedro Sánchez",
+		"Spanish Leader Pedro Sanchez",
+		"Pedro Sanchez's wife",
+		"Supporters of Spain’s Prime Minister Pedro Sanchez",
+		"Spain PM Pedro Sanchez",
+		"Dimisión de Pedro Sánchez",
+		"Longevidad del gobierno de Pedro Sánchez",
+		"Prime Minister Pedro Sanchez",
+		"Spain’s Prime Minister Pedro Sanchez",
+		"Supporters of Spain's Prime Minister Pedro Sanchez",
+		"Pedro Sanchez und seine Frau",
+		"allegations against Pedro Sánchez's wife",
+		"Hija del juez que aceptó querella contra la mujer de Pedro Sánchez",
+		"Spanish PM Pedro Sanchez",
 	}
 
 	start := time.Now()
 
 	for _, item := range toRelated {
-		distance := funcs.LevenshteinDistance(s1, item)
-		fmt.Printf("Levenshtein distance between %s and %s is %d\n", s1, item, distance)
+
+		exact := funcs.ExactPhrase(s1, item)
+
+		countWords := funcs.CountIncludedWords(s1, item)
+
+		distance1 := funcs.LevenshteinDistance(s1, item)
+
+		distance2 := levenshtein.ComputeDistance(s1, item)
+
+		distance3 := texttheater.DistanceForStrings([]rune(s1), []rune(item), texttheater.DefaultOptions)
+
+		fmt.Printf("%s %t %d %d %d %d\n", item, exact, countWords, distance1, distance2, distance3)
+
 	}
 
 	elapsed := time.Since(start)

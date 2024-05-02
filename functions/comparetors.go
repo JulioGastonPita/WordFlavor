@@ -1,5 +1,10 @@
 package functions
 
+import (
+	"regexp"
+	"strings"
+)
+
 func LevenshteinDistance(s1, s2 string) int {
 	m := len(s1)
 	n := len(s2)
@@ -41,4 +46,20 @@ func min(a, b, c int) int {
 	} else {
 		return c
 	}
+}
+
+func CountIncludedWords(s1, s2 string) int {
+	count := 0
+	words := strings.Fields(s1)
+	for _, word := range words {
+		if strings.Contains(s2, word) {
+			count++
+		}
+	}
+	return count
+}
+
+func ExactPhrase(s1, s2 string) bool {
+	regex := regexp.MustCompile(`\b` + regexp.QuoteMeta(s1) + `\b`)
+	return regex.MatchString(s2)
 }
